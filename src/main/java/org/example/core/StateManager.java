@@ -1,5 +1,7 @@
 package org.example.core;
 
+import javafx.animation.PauseTransition;
+import javafx.util.Duration;
 import org.example.ui.ResponseView;
 import org.example.util.HttpUtil;
 import org.json.JSONObject;
@@ -24,13 +26,13 @@ public class StateManager {
 
     public void handleInput(String input) {
         switch (currentState) {
-            case INITIAL:
-                if (input.equals("1")) {
+            case INITIAL -> {
+                if (input.equalsIgnoreCase("register")) {
                     callback.clearResponse();
                     callback.addResponse("You chose to Register.");
                     callback.addResponse("Enter Username");
                     currentState = InputState.REGISTER_USERNAME;
-                } else if (input.equals("2")) {
+                } else if (input.equalsIgnoreCase("login")) {
                     callback.clearResponse();
                     callback.addResponse("You chose to Login.");
                     callback.addResponse("Enter Username");
@@ -38,36 +40,33 @@ public class StateManager {
                 } else {
                     callback.addResponse("You entered: " + input);
                 }
-                break;
-
-            case REGISTER_USERNAME:
+            }
+            case REGISTER_USERNAME -> {
                 tempUsername = input;
                 callback.addResponse("Enter Password for registration");
                 currentState = InputState.REGISTER_PASSWORD;
-                break;
-
-            case REGISTER_PASSWORD:
+            }
+            case REGISTER_PASSWORD -> {
                 tempPassword = input;
-                // At this point, both tempUsername and tempPassword are set.
-                // You can make a POST request or any further processing.
-                System.out.println(tempUsername);
-                System.out.println(tempPassword);
-
-                // Resetting the temporary variables after use.
+                callback.addResponse("User " + tempUsername + " created.");
+                JSONObject response = HttpUtil.register(tempUsername, tempPassword);
+                System.out.println(response);
                 tempUsername = null;
                 tempPassword = null;
-
-                callback.addResponse("Registration complete!");
+                PauseTransition pause = new PauseTransition(Duration.seconds(1));
+                pause.setOnFinished(event -> {
+                    callback.addResponse("Logging you in...");
+                    currentState = InputState.INITIAL;
+                });
+                pause.play();
                 currentState = InputState.INITIAL;
-                break;
-            case LOGIN_USERNAME:
+            }
+            case LOGIN_USERNAME ->
                 // Handle the username input for login
-                currentState = InputState.LOGIN_PASSWORD;
-                break;
-            case LOGIN_PASSWORD:
+                    currentState = InputState.LOGIN_PASSWORD;
+            case LOGIN_PASSWORD ->
                 // Handle the password input for login
-                currentState = InputState.INITIAL;
-                break;
+                    currentState = InputState.INITIAL;
         }
     }
 }

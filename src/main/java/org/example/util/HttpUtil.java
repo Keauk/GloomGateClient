@@ -13,11 +13,11 @@ public class HttpUtil {
     private static final String BASE_URL = "http://localhost:8080"; // Update with your server's URL
 
     public static JSONObject register(String username, String password) {
-        return sendPostRequest("/register", username, password);
+        return sendPostRequest("/api/users/register", username, password);
     }
 
     public static JSONObject login(String username, String password) {
-        return sendPostRequest("/login", username, password);
+        return sendPostRequest("/api/users/login", username, password);
     }
 
     private static JSONObject sendPostRequest(String endpoint, String username, String password) {
@@ -36,8 +36,13 @@ public class HttpUtil {
             HttpResponse response = client.execute(post);
             HttpEntity entity = response.getEntity();
             String result = EntityUtils.toString(entity);
-            return new JSONObject(result);
 
+            if (result.trim().startsWith("{") && result.trim().endsWith("}")) {
+                return new JSONObject(result);
+            } else {
+                System.out.println("Received non-JSON response: " + result);
+                return null;
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }

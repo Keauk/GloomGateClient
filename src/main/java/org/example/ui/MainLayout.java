@@ -30,9 +30,8 @@ public class MainLayout implements InputCallback {
 
     public void showInitialMessage() {
         addResponse("Welcome to GloomGate.");
-        addResponse("Choose an option:");
-        addResponse("1. Register");
-        addResponse("2. Login");
+        addResponse("");
+        addResponse("Would you like to register or login?");
     }
 
     @Override
