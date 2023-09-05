@@ -16,7 +16,7 @@ public class HttpUtil {
         return sendPostRequest("/api/users/register", username, password);
     }
 
-    public static JSONObject login(String username, String password) {
+    public static JSONObject authenticateUser(String username, String password) {
         return sendPostRequest("/api/users/login", username, password);
     }
 
